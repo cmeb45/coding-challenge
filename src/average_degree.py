@@ -3,8 +3,11 @@
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 def traverse_dict(dictionary,tags=None):
+    """Recursively traverses tweet dictionary to retrieve hashtags
+    """
     if tags is None:
         tags = []
     if isinstance(dictionary,list):
@@ -34,5 +37,8 @@ if __name__ == '__main__':
     tweets_file.close()
     
     tweets = pd.DataFrame()
-    tweets['created_at'] = [tweet['created_at'] for tweet in tweets_data]
+    tweets['created_at'] = [datetime.strptime(tweet['created_at'], 
+                    '%a %b %d %H:%M:%S +0000 %Y') for tweet in tweets_data]
     tweets['hashtags'] = [traverse_dict(tweet) for tweet in tweets_data]
+    MaxTime = max(tweets['created_at'])
+    one_min_tweets = tweets[MaxTime - tweets['created_at'] < '0 days 00:00:60']
